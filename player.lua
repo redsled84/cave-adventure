@@ -1,112 +1,127 @@
-local maxRadius = 60
-local player = {
-	x = 0,
-	y = 0,
-	width = 32,
-	height = 48,
-	speed = 260,
-	sword = {
-		right = {
-			maxTheta = math.pi / 3,
-			minTheta = -math.pi / 4,
-		},
-		left = {
-			maxTheta = 2 * math.pi / 3,
-			minTheta = 5 * math.pi / 4,
-		},
-		up = {
-			maxTheta = 5 * math.pi / 6,
-			minTheta = math.pi / 4
-		},
-		down = {
-			maxTheta = 11 * math.pi / 6,
-			minTheta = 5 * math.pi / 4
-		},
-		theta = 0,
-		thetaStep = 10,
-		active = false,
-		radius = maxRadius,
-		radiusStep = 8,
-		x1 = 0,
-		y1 = 0,
-		x2 = 0,
-		y2 = 0,
-		direction = "right",
-		minTheta = 0
-	}
-}
-
-function player:update(dt)
-	self:move(dt)
-	self:moveSword(dt)
+local graphics, k
+do
+  local _obj_0 = love
+  graphics, k = _obj_0.graphics, _obj_0.keyboard
 end
-
-function player:move(dt)
-	if love.keyboard.isDown("d") then
-		self.x = self.x + self.speed * dt
-	elseif love.keyboard.isDown("a") then
-		self.x = self.x - self.speed * dt
-	end
-	if love.keyboard.isDown("s") then
-		self.y = self.y + self.speed * dt
-	elseif love.keyboard.isDown("w") then
-		self.y = self.y - self.speed * dt
-	end
+local Entity = require("entity")
+local Player
+do
+  local _class_0
+  local _parent_0 = Entity
+  local _base_0 = {
+    draw = function(self)
+      graphics.rectangle("line", self.x, self.y, self.width, self.height)
+      return self.sword:draw()
+    end,
+    update = function(self, dt)
+      self:move(dt)
+      return self.sword:update(dt, self:getCenter())
+    end,
+    move = function(self, dt)
+      if k.isDown("a") then
+        self.vx = self.vx - self.speed * dt
+        if self.vx < -self.maxSpeed then
+          self.vx = -self.maxSpeed
+        end
+      elseif k.isDown("d") then
+        self.vx = self.vx + self.speed * dt
+        if self.vx > self.maxSpeed then
+          self.vx = self.maxSpeed
+        end
+      end
+      if k.isDown("s") then
+        self.vy = self.vy + self.speed * dt
+        if self.vy > self.maxSpeed then
+          self.vy = self.maxSpeed
+        end
+      elseif k.isDown("w") then
+        self.vy = self.vy - self.speed * dt
+        if self.vy < -self.maxSpeed then
+          self.vy = -self.maxSpeed
+        end
+      end
+      if not k.isDown("a") and not k.isDown("d") then
+        if self.vx > 0 and self.vx > self.low then
+          self.vx = self.vx - (self.friction * dt)
+        elseif self.vx < 0 and self.vx < -self.low then
+          self.vx = self.vx + (self.friction * dt)
+        else
+          self.vx = 0
+        end
+      end
+      if not k.isDown("s") and not k.isDown("w") then
+        if self.vy > 0 and self.vy > self.low then
+          self.vy = self.vy - (self.friction * dt)
+        elseif self.vy < 0 and self.vy < -self.low then
+          self.vy = self.vy + (self.friction * dt)
+        else
+          self.vy = 0
+        end
+      end
+      self.x = self.x + self.vx
+      self.y = self.y + self.vy
+    end,
+    getCenter = function(self)
+      return {
+        self.x + self.width / 2,
+        self.y + self.height / 2
+      }
+    end,
+    attack = function(self, x, y, button)
+      return self.sword:activateAttack(x, y, button)
+    end
+  }
+  _base_0.__index = _base_0
+  setmetatable(_base_0, _parent_0.__base)
+  _class_0 = setmetatable({
+    __init = function(self, world, x, y, sword, torch, vx, vy, width, height)
+      if torch == nil then
+        torch = 0
+      end
+      if vx == nil then
+        vx = 0
+      end
+      if vy == nil then
+        vy = 0
+      end
+      if width == nil then
+        width = 32
+      end
+      if height == nil then
+        height = 32
+      end
+      self.world, self.x, self.y, self.sword, self.torch, self.vx, self.vy, self.width, self.height = world, x, y, sword, torch, vx, vy, width, height
+      _class_0.__parent.__init(self, self.world, self.x, self.y, self.width, self.height)
+      self.speed = 50
+      self.maxSpeed = 6
+      self.friction = 50
+      self.low = 1.2
+    end,
+    __base = _base_0,
+    __name = "Player",
+    __parent = _parent_0
+  }, {
+    __index = function(cls, name)
+      local val = rawget(_base_0, name)
+      if val == nil then
+        local parent = rawget(cls, "__parent")
+        if parent then
+          return parent[name]
+        end
+      else
+        return val
+      end
+    end,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  if _parent_0.__inherited then
+    _parent_0.__inherited(_parent_0, _class_0)
+  end
+  Player = _class_0
 end
-
-function player:moveSword(dt)
-	if not self.sword.active then
-		self.sword.x1, self.sword.x2 = self.x, self.x
-		self.sword.y1, self.sword.y2 = self.y, self.y
-	else
-		self.sword.x1 = self.x
-		self.sword.y1 = self.y
-
-		if self.sword.theta > self.sword.minTheta then
-			self.sword.theta = self.sword.theta - self.sword.thetaStep * dt
-			self.sword.radius = self.sword.radius - self.sword.radiusStep * dt
-		else
-			self.sword.theta = 0
-			self.sword.active = false
-		end
-
-		self.sword.x2 = self.sword.radius * math.cos(self.sword.theta) + self.sword.x1
-		self.sword.y2 = self.sword.radius * math.sin(self.sword.theta) + self.sword.y1
-	end
-end
-
-function player:draw()
-	love.graphics.setColor(150, 150, 200)
-	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-
-	love.graphics.setColor(0, 255, 0)
-	love.graphics.line(self.sword.x1, self.sword.y1, self.sword.x2, self.sword.y2)
-end
-
-function player:attack(key)
-	if not self.sword.active
-	and (key == "right"
-	or key == "left"
-	or key == "up"
-	or key == "down") then
-		self.sword.active = true
-		self.sword.radius = maxRadius
-		self.sword.direction = key
-	end
-
-	if key == "right" then
-		self.sword.theta = self.sword.right.maxTheta
-		self.sword.minTheta = self.sword.right.minTheta
-	elseif key == "left" then
-		self.sword.theta = self.sword.left.maxTheta
-		self.sword.minTheta = self.sword.left.minTheta
-	elseif key == "up" then
-		self.sword.theta = self.sword.up.maxTheta
-		self.sword.minTheta = self.sword.up.minTheta
-	elseif key == "down" then
-		self.sword.theta = self.sword.down.maxTheta
-		self.sword.minTheta = self.sword.down.minTheta
-	end
-end
-
-return player
+return Player
