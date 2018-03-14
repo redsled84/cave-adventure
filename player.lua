@@ -19,25 +19,41 @@ do
     end,
     move = function(self, dt)
       if k.isDown("a") then
-        self.vx = self.vx - self.speed * dt
+        if self.vx > 0 then
+          self.vx = self.vx - (self.friction * dt)
+        end
         if self.vx < -self.maxSpeed then
           self.vx = -self.maxSpeed
+        else
+          self.vx = self.vx - self.speed * dt
         end
       elseif k.isDown("d") then
-        self.vx = self.vx + self.speed * dt
+        if self.vx < 0 then
+          self.vx = self.vx + (self.friction * dt)
+        end
         if self.vx > self.maxSpeed then
           self.vx = self.maxSpeed
+        else
+          self.vx = self.vx + self.speed * dt
         end
       end
       if k.isDown("s") then
-        self.vy = self.vy + self.speed * dt
+        if self.vy < 0 then
+          self.vy = self.vy + (self.friction * dt)
+        end
         if self.vy > self.maxSpeed then
           self.vy = self.maxSpeed
+        else
+          self.vy = self.vy + self.speed * dt
         end
       elseif k.isDown("w") then
-        self.vy = self.vy - self.speed * dt
+        if self.vy > 0 then
+          self.vy = self.vy - (self.friction * dt)
+        end
         if self.vy < -self.maxSpeed then
           self.vy = -self.maxSpeed
+        else
+          self.vy = self.vy - self.speed * dt
         end
       end
       if not k.isDown("a") and not k.isDown("d") then
@@ -58,8 +74,8 @@ do
           self.vy = 0
         end
       end
-      self.x = self.x + self.vx
-      self.y = self.y + self.vy
+      self.x = self.x + (self.vx * dt)
+      self.y = self.y + (self.vy * dt)
     end,
     getCenter = function(self)
       return {
@@ -92,10 +108,10 @@ do
       end
       self.world, self.x, self.y, self.sword, self.torch, self.vx, self.vy, self.width, self.height = world, x, y, sword, torch, vx, vy, width, height
       _class_0.__parent.__init(self, self.world, self.x, self.y, self.width, self.height)
-      self.speed = 50
-      self.maxSpeed = 6
-      self.friction = 50
-      self.low = 1.2
+      self.speed = 1500
+      self.maxSpeed = 600
+      self.friction = 1500
+      self.low = 135
     end,
     __base = _base_0,
     __name = "Player",

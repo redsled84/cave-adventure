@@ -6,10 +6,10 @@ class Player extends Entity
   new: (@world, @x, @y, @sword, @torch=0, @vx=0, @vy=0, @width=32, @height=32) =>
     super @world, @x, @y, @width, @height
 
-    @speed = 50
-    @maxSpeed = 6
-    @friction = 50
-    @low = 1.2
+    @speed = 1500
+    @maxSpeed = 600
+    @friction = 1500
+    @low = 135
 
   draw: =>
     graphics.rectangle "line", @x, @y, @width, @height
@@ -19,28 +19,40 @@ class Player extends Entity
     @move dt
     @sword\update dt, @getCenter!
 
-    -- print @vx, @vy
+    -- print @x, @y
     -- print @sword.x1, @sword.y1
 
   move: (dt) =>
 
     -- acceleration
     if k.isDown "a"
-      @vx = @vx - @speed * dt
+      if @vx > 0
+        @vx -= @friction * dt
       if @vx < -@maxSpeed
         @vx = -@maxSpeed
+      else
+        @vx = @vx - @speed * dt
     elseif k.isDown "d"
-      @vx = @vx + @speed * dt
+      if @vx < 0
+        @vx += @friction * dt
       if @vx > @maxSpeed
         @vx = @maxSpeed
+      else
+        @vx = @vx + @speed * dt
     if k.isDown "s"
-      @vy = @vy + @speed * dt
+      if @vy < 0
+        @vy += @friction * dt
       if @vy > @maxSpeed
         @vy = @maxSpeed
+      else
+        @vy = @vy + @speed * dt
     elseif k.isDown "w"
-      @vy = @vy - @speed * dt
+      if @vy > 0
+        @vy -= @friction * dt
       if @vy < -@maxSpeed
         @vy = -@maxSpeed
+      else
+        @vy = @vy - @speed * dt
 
     -- deceleration
     if not k.isDown("a") and not k.isDown("d")
@@ -58,8 +70,8 @@ class Player extends Entity
       else
         @vy = 0
 
-    @x += @vx
-    @y += @vy
+    @x += @vx * dt
+    @y += @vy * dt
 
   getCenter: =>
     return {@x + @width / 2, @y + @height / 2}

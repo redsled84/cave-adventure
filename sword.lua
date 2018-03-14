@@ -53,7 +53,7 @@ do
       return graphics.line(self.x1, self.y1, self.x2, self.y2)
     end,
     activateAttack = function(self, x, y, button)
-      if button == 1 then
+      if button == 1 and not self.active then
         self.active = true
         local dx, dy
         dx = x - self.x1

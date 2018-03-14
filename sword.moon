@@ -61,7 +61,7 @@ class Sword
     graphics.line @x1, @y1, @x2, @y2
 
   activateAttack: (x, y, button) =>
-    if button == 1
+    if button == 1 and not @active
       @active = true
       local dx, dy
       dx = x - @x1
