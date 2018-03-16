@@ -1,4 +1,5 @@
-{ graphics: graphics, keyboard: k } = love
+import asin, acos, sqrt, atan2 from math
+{ graphics: graphics, keyboard: k, mouse: mouse } = love
 
 Entity = require "entity"
 
@@ -10,10 +11,18 @@ class Player extends Entity
     @maxSpeed = 600
     @friction = 1500
     @low = 135
+    @directionImage = graphics.newImage "dir.png"
 
   draw: =>
-    graphics.rectangle "line", @x, @y, @width, @height
+    graphics.setColor 255, 125, 125
     @sword\draw!
+    
+    graphics.setColor 125, 255, 125
+    graphics.draw @directionImage, @x + @width / 2, @y + @height / 2,
+      @sword\getMouseTheta! + math.pi / 2, 1, 1, @width / 2, @height / 2
+
+    graphics.setColor 255, 255, 255
+    graphics.rectangle "line", @x, @y, @width, @height
 
   update: (dt) =>
     @move dt

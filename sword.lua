@@ -18,17 +18,21 @@ do
         return self:controlPolar(dt)
       end
     end,
+    getMouseTheta = function(self)
+      local mouseTheta, mouseX, mouseY
+      mouseX = mouse.getX()
+      mouseY = mouse.getY()
+      local dx, dy
+      dx = mouseX - self.x1
+      dy = mouseY - self.y1
+      return atan2(dy, dx)
+    end,
     setPosition = function(self, dt, playerPos)
       self.x1 = playerPos[1]
       self.y1 = playerPos[2]
       if not self.active then
-        local mouseTheta, mouseX, mouseY
-        mouseX = mouse.getX()
-        mouseY = mouse.getY()
-        local dx, dy
-        dx = mouseX - self.x1
-        dy = mouseY - self.y1
-        mouseTheta = atan2(dy, dx)
+        local mouseTheta
+        mouseTheta = self:getMouseTheta()
         self.x2 = self.radius * cos(self.theta + mouseTheta + self.offsetTheta) + self.x1
         self.y2 = self.radius * sin(self.theta + mouseTheta + self.offsetTheta) + self.y1
       else
@@ -48,6 +52,9 @@ do
         self.theta = 0
         self.active = false
       end
+    end,
+    getTheta = function(self)
+      return not self.active and self.theta + self:getMouseTheta() + self.offsetTheta or self.theta + self.offsetTheta
     end,
     draw = function(self)
       return graphics.line(self.x1, self.y1, self.x2, self.y2)
@@ -85,7 +92,7 @@ do
       self.theta = 0
       self.thetaStep = math.pi * 4
       self.offsetTheta = 2 * math.pi / 3
-      self.maxRadius = 50
+      self.maxRadius = 100
       self.minRadius = 25
       self.radius = self.maxRadius
       self.radiusStep = 4

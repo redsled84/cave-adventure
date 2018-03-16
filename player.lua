@@ -1,7 +1,12 @@
-local graphics, k
+local asin, acos, sqrt, atan2
+do
+  local _obj_0 = math
+  asin, acos, sqrt, atan2 = _obj_0.asin, _obj_0.acos, _obj_0.sqrt, _obj_0.atan2
+end
+local graphics, k, mouse
 do
   local _obj_0 = love
-  graphics, k = _obj_0.graphics, _obj_0.keyboard
+  graphics, k, mouse = _obj_0.graphics, _obj_0.keyboard, _obj_0.mouse
 end
 local Entity = require("entity")
 local Player
@@ -10,8 +15,12 @@ do
   local _parent_0 = Entity
   local _base_0 = {
     draw = function(self)
-      graphics.rectangle("line", self.x, self.y, self.width, self.height)
-      return self.sword:draw()
+      graphics.setColor(255, 125, 125)
+      self.sword:draw()
+      graphics.setColor(125, 255, 125)
+      graphics.draw(self.directionImage, self.x + self.width / 2, self.y + self.height / 2, self.sword:getMouseTheta() + math.pi / 2, 1, 1, self.width / 2, self.height / 2)
+      graphics.setColor(255, 255, 255)
+      return graphics.rectangle("line", self.x, self.y, self.width, self.height)
     end,
     update = function(self, dt)
       self:move(dt)
@@ -112,6 +121,7 @@ do
       self.maxSpeed = 600
       self.friction = 1500
       self.low = 135
+      self.directionImage = graphics.newImage("dir.png")
     end,
     __base = _base_0,
     __name = "Player",

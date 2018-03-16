@@ -10,7 +10,7 @@ class Sword
     @theta = 0
     @thetaStep = math.pi * 4
     @offsetTheta = 2 * math.pi / 3
-    @maxRadius = 50
+    @maxRadius = 100
     @minRadius = 25
     @radius = @maxRadius
     @radiusStep = 4
@@ -24,19 +24,24 @@ class Sword
 
     -- print @radius
 
+  getMouseTheta: =>
+    local mouseTheta, mouseX, mouseY
+    mouseX = mouse.getX!
+    mouseY = mouse.getY!
+    local dx, dy
+    dx = mouseX - @x1
+    dy = mouseY - @y1
+    -- print dx, dy
+    return atan2(dy, dx)
+
   setPosition: (dt, playerPos) =>
     @x1 = playerPos[1]
     @y1 = playerPos[2]
 
     if not @active
-      local mouseTheta, mouseX, mouseY
-      mouseX = mouse.getX!
-      mouseY = mouse.getY!
-      local dx, dy
-      dx = mouseX - @x1
-      dy = mouseY - @y1
+      local mouseTheta
       -- print dx, dy
-      mouseTheta = atan2(dy, dx)
+      mouseTheta = @getMouseTheta!
       -- mouseTheta = 0
 
       @x2 = @radius * cos(@theta + mouseTheta + @offsetTheta) + @x1
@@ -56,6 +61,9 @@ class Sword
     else
       @theta = 0
       @active = false
+
+  getTheta: =>
+    return not @active and @theta + @getMouseTheta! + @offsetTheta or @theta + @offsetTheta
 
   draw: =>
     graphics.line @x1, @y1, @x2, @y2
