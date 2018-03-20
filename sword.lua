@@ -59,8 +59,10 @@ do
     draw = function(self)
       return graphics.line(self.x1, self.y1, self.x2, self.y2)
     end,
-    activateAttack = function(self, x, y, button)
-      if button == 1 and not self.active then
+    activateAttack = function(self, key)
+      local x, y
+      x, y = mouse.getX(), mouse.getY()
+      if key == "space" and not self.active then
         self.active = true
         local dx, dy
         dx = x - self.x1
@@ -88,14 +90,15 @@ do
       end
       self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
       self.deltaTheta = 0
-      self.minTheta = -4 * math.pi / 3
+      self.minTheta = -2.5 * math.pi / 3.5
       self.theta = 0
-      self.thetaStep = math.pi * 4
-      self.offsetTheta = 2 * math.pi / 3
+      self.thetaStep = math.pi * 2.5
+      self.offsetTheta = 1 * math.pi / 3
       self.maxRadius = 100
       self.minRadius = 25
       self.radius = self.maxRadius
       self.radiusStep = 4
+      self.damage = 50
       self.active = false
     end,
     __base = _base_0,

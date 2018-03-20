@@ -6,15 +6,16 @@ class Sword
   new: (@x1=0, @y1=0, @x2=0, @y2=0) =>
     -- Polar constants
     @deltaTheta = 0
-    @minTheta = -4 * math.pi / 3
+    @minTheta = -2.5 * math.pi / 3.5
     @theta = 0
-    @thetaStep = math.pi * 4
-    @offsetTheta = 2 * math.pi / 3
+    @thetaStep = math.pi * 2.5
+    @offsetTheta = 1 * math.pi / 3
     @maxRadius = 100
     @minRadius = 25
     @radius = @maxRadius
     @radiusStep = 4
 
+    @damage = 50
     @active = false
 
   update: (dt, playerPos) =>
@@ -68,8 +69,10 @@ class Sword
   draw: =>
     graphics.line @x1, @y1, @x2, @y2
 
-  activateAttack: (x, y, button) =>
-    if button == 1 and not @active
+  activateAttack: (key) =>
+    local x, y
+    x, y = mouse.getX!, mouse.getY!
+    if key == "space" and not @active
       @active = true
       local dx, dy
       dx = x - @x1

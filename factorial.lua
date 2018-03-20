@@ -1,0 +1,1 @@
+io.write("Enter a number: ") my_n = tonumber(io.read()) function factorial(n) return n > 0 and n * factorial(n - 1) or 1 end print(factorial(my_n))
